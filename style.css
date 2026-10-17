@@ -245,21 +245,46 @@ dialog::backdrop { background: #0f0f0dcc; }
 .prose blockquote { margin: 0; padding: 4px 0 4px 18px; background: var(--surface); color: var(--muted); }
 .prose .katex-display { overflow-x: auto; overflow-y: hidden; padding: 4px 0; }
 
-/* Tools: plain fields, the answer set larger than the question */
-.tool { max-width: 760px; margin-bottom: 104px; }
-.tool h2 { font-size: var(--step-head); font-weight: 600; letter-spacing: -.02em; margin: 0 0 20px; }
-.tool-row { display: flex; flex-wrap: wrap; gap: 16px 24px; }
-.tool-row label { display: grid; gap: 6px; font-size: var(--step-small); color: var(--muted); }
-.tool-row input { font: inherit; font-size: var(--step-body); color: var(--ink); background: var(--surface); border: 0; border-bottom: 2px solid var(--ink); padding: 10px 12px; width: 11em; font-variant-numeric: tabular-nums; }
-.tool-row input:focus-visible { outline: 2px solid var(--accent); outline-offset: 0; }
-.tool-out { font-size: var(--step-lead); letter-spacing: -.01em; margin: 20px 0 8px; font-variant-numeric: tabular-nums; white-space: pre-wrap; }
-.tool-note { margin: 12px 0 0; max-width: 60ch; }
-.tool-copy { font-size: var(--step-small); color: var(--muted); min-height: 44px; text-decoration: underline; text-underline-offset: 3px; }
-.tool-copy:hover { color: var(--ink); }
-.tool-index { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0 0 72px; font-size: var(--step-small); }
-.tool-index a { text-decoration: underline; text-underline-offset: 3px; min-height: 44px; display: inline-flex; align-items: center; }
-.tool h2 { scroll-margin-top: 96px; }
-.tool-note a { text-decoration: underline; text-underline-offset: 3px; }
+/* Tools: one brass beam bar that sticks while you scroll; quiet calculators under it, the answer set larger than the question */
+.tools .page-lead { margin-bottom: 40px; }
+.beam { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; align-items: end; gap: 12px 24px; margin: 0 calc(-1 * var(--margin)) 72px; padding: 14px var(--margin) 16px; background: var(--bg); border-bottom: 3px solid var(--accent); }
+.beam-title { font-size: var(--step-small); font-weight: 600; margin: 0; align-self: center; min-width: 3em; }
+.beam .chips { margin: 0; }
+.tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: 88px 64px; max-width: 1180px; }
+.tool { border-top: 1px solid var(--ink); padding-top: 18px; min-width: 0; }
+.tool h2 { font-size: var(--step-head); font-weight: 600; letter-spacing: -.02em; line-height: 1.15; margin: 0 0 8px; scroll-margin-top: 120px; }
+.tool-lead { color: var(--muted); margin: 0 0 22px; max-width: 34em; }
+.fields { display: flex; flex-wrap: wrap; gap: 14px 20px; }
+.field { display: grid; gap: 6px; font-size: var(--step-small); color: var(--muted); }
+.field .in { display: flex; align-items: baseline; background: var(--surface); border-bottom: 2px solid var(--ink); }
+.field .in:focus-within { outline: 2px solid var(--ink); outline-offset: 2px; }
+.field input { font: inherit; font-size: var(--step-body); color: var(--ink); background: none; border: 0; padding: 10px 4px 10px 12px; width: 6.25em; font-variant-numeric: tabular-nums; outline: none; -moz-appearance: textfield; }
+.field input::-webkit-inner-spin-button, .field input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.field i { font-style: normal; color: var(--muted); padding-right: 12px; min-width: 1.5em; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 0; }
+.chips button { font-size: var(--step-small); min-height: 36px; padding: 0 12px; border: 1px solid color-mix(in srgb, var(--ink) 35%, transparent); }
+.chips button:hover { border-color: var(--ink); }
+.chips button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.result { display: flex; flex-wrap: wrap; gap: 8px 32px; margin: 26px 0 0; }
+.result dt { font-size: var(--step-small); color: var(--muted); min-height: 1.5em; }
+.result dd { margin: 0; }
+.result dd button { position: relative; font-size: var(--step-lead); letter-spacing: -.015em; line-height: 1.2; font-variant-numeric: tabular-nums; text-align: left; }
+.result dd button small { font-size: .6em; color: var(--muted); margin-left: .25em; letter-spacing: 0; }
+.result dd button:hover { text-decoration: underline dotted; text-decoration-thickness: 1px; text-underline-offset: 6px; }
+.result .warn { max-width: 30em; }
+[data-copied]::after { content: attr(data-copied); position: absolute; left: 0; top: 100%; margin-top: 4px; font-size: var(--step-small); letter-spacing: 0; white-space: nowrap; color: var(--muted); }
+.tool-note { margin: 22px 0 0; max-width: 60ch; font-size: var(--step-small); color: var(--muted); }
+.tool-note a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.tool-share { margin: 96px 0 0; }
+.tool-share button { position: relative; font-size: var(--step-small); min-height: 44px; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 760px) {
+  .beam { gap: 10px 12px; padding: 10px var(--margin) 12px; margin-bottom: 56px; }
+  .beam-title { display: none; }
+  .beam .field input { width: 6em; }
+  .beam .chips { flex-wrap: nowrap; overflow-x: auto; width: 100%; scrollbar-width: none; }
+  .beam .chips button { flex: none; }
+  .tool-grid { gap: 64px; }
+}
 
 /* Lab */
 .lab-h2 { font-size: var(--step-head); font-weight: 600; letter-spacing: -.02em; margin: 120px 0 12px; }

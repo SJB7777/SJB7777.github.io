@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#e8e8e3">
-  <meta name="description" content="Free X-ray calculator for the beamline: photon energy ↔ wavelength (keV, Å), Bragg angle 2θ, momentum transfer q and d-spacing, grazing-incidence beam footprint, and transmission. Live results, works on phones.">
+  <meta name="description" content="Free X-ray calculator for the beamline and the lab diffractometer: photon energy ↔ wavelength, Bragg angle 2θ ↔ q ↔ d-spacing with Si and Ge reflections, grazing-incidence beam footprint, transmission, film thickness from Kiessig fringes, and Scherrer crystallite size. Live results, works on phones.">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="X-ray Calculator: Energy, Wavelength, Bragg Angle, q, Footprint">
-  <meta property="og:description" content="Photon energy ↔ wavelength, Bragg angle, q and d-spacing, beam footprint and transmission. Live results as you type.">
+  <meta property="og:title" content="X-ray Calculator: Energy, Bragg Angle, q, Footprint, Kiessig, Scherrer">
+  <meta property="og:description" content="Set the beam energy once; Bragg angle, q, d-spacing, footprint, film thickness and crystallite size follow. Live results as you type.">
   <meta property="og:url" content="https://nanisaac.github.io/tools/">
   <meta property="og:image" content="https://nanisaac.github.io/og-image.jpg">
   <meta name="twitter:card" content="summary_large_image">
@@ -16,9 +16,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600&display=swap">
-  <link rel="stylesheet" href="../style.css">
-  <title>X-ray Calculator: Energy ↔ Wavelength, Bragg Angle, q, Footprint · Isaac Yong</title>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"X-ray beamline calculator","url":"https://nanisaac.github.io/tools/","description":"Photon energy and wavelength, Bragg angle, momentum transfer q and d-spacing, beam footprint at grazing incidence, and X-ray transmission.","applicationCategory":"EducationalApplication","operatingSystem":"Any (web browser)","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Photon energy to wavelength (keV to Å)","Bragg angle 2θ from d-spacing and energy","Momentum transfer q and d-spacing from 2θ","Grazing-incidence beam footprint","Transmission from thickness and attenuation length"],"author":{"@type":"Person","name":"Isaac Yong","url":"https://nanisaac.github.io/"}}</script>
+  <link rel="stylesheet" href="../style.css?v=tools2">
+  <title>X-ray Calculator: Energy ↔ Wavelength, Bragg Angle, q, Footprint, Scherrer · Isaac Yong</title>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"X-ray beamline calculator","url":"https://nanisaac.github.io/tools/","description":"Photon energy and wavelength, Bragg angle, momentum transfer q and d-spacing, beam footprint at grazing incidence, X-ray transmission, film thickness from Kiessig fringes and Scherrer crystallite size.","applicationCategory":"EducationalApplication","operatingSystem":"Any (web browser)","isAccessibleForFree":true,"inLanguage":["en","ko"],"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Photon energy to wavelength (keV to Å), with Cu, Mo, Ag, Co and Cr Kα1 presets","Bragg angle 2θ, momentum transfer q and d-spacing, linked both ways","Si and Ge reflection d-spacings","Grazing-incidence beam footprint and overfill angle","Transmission from thickness and attenuation length","Film thickness from Kiessig fringe spacing","Scherrer crystallite size from peak width"],"author":{"@type":"Person","name":"Isaac Yong","url":"https://nanisaac.github.io/"}}</script>
 </head>
 <body class="sub">
   <script>let t; try { t = localStorage.getItem('isaac-theme'); } catch {} if ((t ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')) === 'dark') document.body.classList.add('dark');</script>
@@ -33,65 +33,84 @@
     </nav>
   </header>
 
-  <main class="wrap page">
-    <h1 class="page-title" data-ko="빔라인을 위한<br>X선 계산기.">X-ray calculator<br>for the beamline.</h1>
-    <p class="page-lead" data-ko="랩이 아이디어를 가지고 노는 곳이라면, 이 페이지는 빔타임 중에 바로 답을 얻는 곳입니다. 입력하는 즉시 다시 계산합니다. 따로 적혀 있지 않으면 에너지는 keV, 길이는 Å입니다. 빔타임 로그북까지 포함한 오프라인 전체판은 &lt;a href=&quot;https://xray.ooguy.com/&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;xray.ooguy.com&lt;/a&gt;에 있습니다.">The lab is for playing with ideas; this page is for getting an answer during beamtime. Every field recalculates as you type. Energies in keV, lengths in Å unless a field says otherwise. The full offline set, with a beamtime logbook, lives at <a href="https://xray.ooguy.com/" target="_blank" rel="noopener noreferrer">xray.ooguy.com</a>.</p>
-    <nav class="tool-index" aria-label="Calculators"><a href="#energy-wavelength" data-ko="에너지 ↔ 파장">Energy ↔ wavelength</a><a href="#bragg-angle" data-ko="브래그 각">Bragg angle</a><a href="#momentum-transfer" data-ko="q와 d-간격">q and d-spacing</a><a href="#beam-footprint" data-ko="빔 풋프린트">Beam footprint</a><a href="#transmission" data-ko="투과율">Transmission</a></nav>
+  <main class="wrap page tools">
+    <h1 class="page-title" data-ko="X선 계산기.">X-ray calculator.</h1>
+    <p class="page-lead" data-ko="빔 에너지를 한 번 정하면 아래 계산이 모두 따라갑니다. 입력하는 즉시 다시 계산하고, 결과 숫자를 누르면 복사됩니다. 오프라인 전체판과 빔타임 로그북은 &lt;a href=&quot;https://xray.ooguy.com/&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;xray.ooguy.com&lt;/a&gt;에 있습니다.">Set the beam energy once and every calculator below follows it. Results update as you type; tap a result to copy it. The full offline set, with a beamtime logbook, is at <a href="https://xray.ooguy.com/" target="_blank" rel="noopener noreferrer">xray.ooguy.com</a>.</p>
 
-    <section class="tool" aria-labelledby="energy-wavelength">
-      <h2 id="energy-wavelength" data-ko="광자 에너지와 파장">Photon energy and wavelength</h2>
-      <div class="tool-row">
-        <label><span data-ko="에너지, keV">Energy, keV</span> <input id="e-kev" type="number" step="any" value="12.4" inputmode="decimal"></label>
-        <label><span data-ko="파장, Å">Wavelength, Å</span> <input id="e-ang" type="number" step="any" inputmode="decimal"></label>
-      </div>
-      <p class="tool-out" id="e-out" aria-live="polite"></p>
-      <p class="tool-note" data-ko="λ = hc / E, hc = 12.39842 keV·Å.">λ = hc / E, with hc = 12.39842 keV·Å.</p>
+    <section class="beam" id="energy-wavelength" aria-labelledby="beam-title">
+      <h2 id="beam-title" class="beam-title" data-ko="빔">Beam</h2>
+      <label class="field"><span data-ko="에너지">Energy</span><span class="in"><input id="e-kev" type="number" step="any" min="0" value="8.048" inputmode="decimal"><i>keV</i></span></label>
+      <label class="field"><span data-ko="파장">Wavelength</span><span class="in"><input id="e-ang" type="number" step="any" min="0" inputmode="decimal"><i>Å</i></span></label>
+      <div class="chips" role="group" aria-label="Kα1 lines" id="e-presets"></div>
     </section>
 
-    <section class="tool" aria-labelledby="bragg-angle">
-      <h2 id="bragg-angle" data-ko="브래그 각">Bragg angle</h2>
-      <div class="tool-row">
-        <label><span data-ko="d-간격, Å">d-spacing, Å</span> <input id="b-d" type="number" step="any" value="3.1356" inputmode="decimal"></label>
-        <label><span data-ko="에너지, keV">Energy, keV</span> <input id="b-kev" type="number" step="any" value="8.048" inputmode="decimal"></label>
-      </div>
-      <p class="tool-out" id="b-out" aria-live="polite"></p>
-      <p class="tool-note" data-ko="λ = 2d sin θ. 기본값은 Si(111)과 Cu Kα1, 2θ = 28.44°입니다.">λ = 2d sin θ. The defaults are Si(111) with Cu Kα1, 2θ = 28.44°.</p>
-    </section>
+    <div class="tool-grid">
+      <section class="tool" id="momentum-transfer" aria-labelledby="bragg-angle">
+        <h2 id="bragg-angle" data-ko="브래그 각, q, d-간격">Bragg angle, q and d-spacing</h2>
+        <p class="tool-lead" data-ko="셋 중 아무거나 입력하면 나머지가 맞춰집니다. 에너지를 바꾸면 d는 그대로, 2θ가 움직입니다.">Type any one of the three; the others follow. Change the energy and d stays put while 2θ moves.</p>
+        <div class="fields">
+          <label class="field"><span>2θ</span><span class="in"><input id="b-tth" type="number" step="any" inputmode="decimal"><i>°</i></span></label>
+          <label class="field"><span>q</span><span class="in"><input id="b-q" type="number" step="any" inputmode="decimal"><i>Å⁻¹</i></span></label>
+          <label class="field"><span>d</span><span class="in"><input id="b-d" type="number" step="any" value="3.1356" inputmode="decimal"><i>Å</i></span></label>
+        </div>
+        <div class="chips" role="group" aria-label="Reflections" id="b-presets"></div>
+        <dl class="result" id="b-out" aria-live="polite"></dl>
+        <p class="tool-note" data-ko="λ = 2d sin θ, q = 4π sin θ / λ = 2π / d. 반사율 측정에서는 θ가 스침각이고 q = q&lt;sub&gt;z&lt;/sub&gt;입니다.">λ = 2d sin θ and q = 4π sin θ / λ = 2π / d. For reflectivity, θ is the grazing angle and q = q<sub>z</sub>.</p>
+      </section>
 
-    <section class="tool" aria-labelledby="momentum-transfer">
-      <h2 id="momentum-transfer" data-ko="운동량 전달 q와 d-간격">Momentum transfer q and d-spacing</h2>
-      <div class="tool-row">
-        <label><span data-ko="2θ, 도">2θ, degrees</span> <input id="q-tth" type="number" step="any" value="1" inputmode="decimal"></label>
-        <label><span data-ko="에너지, keV">Energy, keV</span> <input id="q-kev" type="number" step="any" value="10" inputmode="decimal"></label>
-      </div>
-      <p class="tool-out" id="q-out" aria-live="polite"></p>
-      <p class="tool-note" data-ko="q = 4π sin θ / λ, d = 2π / q. 반사율 측정에서는 θ가 스침각이고 q = q&lt;sub&gt;z&lt;/sub&gt;입니다.">q = 4π sin θ / λ and d = 2π / q. For reflectivity, θ is the grazing angle and q = q<sub>z</sub>.</p>
-    </section>
+      <section class="tool" aria-labelledby="beam-footprint">
+        <h2 id="beam-footprint" data-ko="빔 풋프린트">Beam footprint</h2>
+        <p class="tool-lead" data-ko="낮은 각도에서 빔이 시료 밖으로 넘치는지 확인합니다.">Check whether the beam spills past the sample at low angle.</p>
+        <div class="fields">
+          <label class="field"><span data-ko="빔 높이">Beam height</span><span class="in"><input id="f-h" type="number" step="any" min="0" value="0.1" inputmode="decimal"><i>mm</i></span></label>
+          <label class="field"><span data-ko="입사각 α">Incidence α</span><span class="in"><input id="f-a" type="number" step="any" min="0" value="0.5" inputmode="decimal"><i>°</i></span></label>
+          <label class="field"><span data-ko="시료 길이">Sample length</span><span class="in"><input id="f-s" type="number" step="any" min="0" value="10" inputmode="decimal"><i>mm</i></span></label>
+        </div>
+        <dl class="result" id="f-out" aria-live="polite"></dl>
+        <p class="tool-note" data-ko="L = h / sin α. sin α = h / 시료 길이가 되는 각도보다 낮으면 빔 일부가 시료를 비켜 가고 측정 세기가 줄어듭니다.">L = h / sin α. Below the angle where sin α = h / sample length, part of the beam misses the sample and the measured intensity drops.</p>
+      </section>
 
-    <section class="tool" aria-labelledby="beam-footprint">
-      <h2 id="beam-footprint" data-ko="빔 풋프린트">Beam footprint</h2>
-      <div class="tool-row">
-        <label><span data-ko="빔 높이, mm">Beam height, mm</span> <input id="f-h" type="number" step="any" value="0.1" inputmode="decimal"></label>
-        <label><span data-ko="입사각, 도">Incidence angle, degrees</span> <input id="f-a" type="number" step="any" value="0.5" inputmode="decimal"></label>
-      </div>
-      <p class="tool-out" id="f-out" aria-live="polite"></p>
-      <p class="tool-note" data-ko="L = h / sin α. L이 시료보다 길면 시료가 빔 전체를 받지 못해 측정 세기가 줄어듭니다.">L = h / sin α. When L is longer than the sample, the sample stops seeing the whole beam and the measured intensity drops.</p>
-    </section>
+      <section class="tool" aria-labelledby="transmission">
+        <h2 id="transmission" data-ko="투과율">Transmission</h2>
+        <p class="tool-lead" data-ko="필터, 창, 시료를 지나고 남는 빔의 비율.">How much beam gets through a filter, a window or the sample.</p>
+        <div class="fields">
+          <label class="field"><span data-ko="두께">Thickness</span><span class="in"><input id="a-t" type="number" step="any" min="0" value="100" inputmode="decimal"><i>µm</i></span></label>
+          <label class="field"><span data-ko="감쇠 길이">Attenuation length</span><span class="in"><input id="a-l" type="number" step="any" min="0" value="70" inputmode="decimal"><i>µm</i></span></label>
+        </div>
+        <dl class="result" id="a-out" aria-live="polite"></dl>
+        <p class="tool-note" data-ko="T = exp(−t / ℓ). 감쇠 길이는 물질과 에너지에 맞게 &lt;a href=&quot;https://henke.lbl.gov/optical_constants/atten2.html&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;CXRO 표&lt;/a&gt;에서 찾을 수 있습니다.">T = exp(−t / ℓ). Look the attenuation length up for your material and energy in the <a href="https://henke.lbl.gov/optical_constants/atten2.html" target="_blank" rel="noopener noreferrer">CXRO tables</a>.</p>
+      </section>
 
-    <section class="tool" aria-labelledby="transmission">
-      <h2 id="transmission" data-ko="투과율">Transmission</h2>
-      <div class="tool-row">
-        <label><span data-ko="두께, µm">Thickness, µm</span> <input id="a-t" type="number" step="any" value="100" inputmode="decimal"></label>
-        <label><span data-ko="감쇠 길이, µm">Attenuation length, µm</span> <input id="a-l" type="number" step="any" value="70" inputmode="decimal"></label>
-      </div>
-      <p class="tool-out" id="a-out" aria-live="polite"></p>
-      <p class="tool-note" data-ko="T = exp(−t / ℓ). 감쇠 길이는 시료 물질과 에너지에 맞게 찾아 넣으세요. 예: &lt;a href=&quot;https://henke.lbl.gov/optical_constants/atten2.html&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;CXRO 표&lt;/a&gt;.">T = exp(−t / ℓ). Look the attenuation length up for your material and energy, for example in the <a href="https://henke.lbl.gov/optical_constants/atten2.html" target="_blank" rel="noopener noreferrer">CXRO tables</a>.</p>
-    </section>
+      <section class="tool" aria-labelledby="film-thickness">
+        <h2 id="film-thickness" data-ko="키시그 무늬로 박막 두께">Film thickness from Kiessig fringes</h2>
+        <p class="tool-lead" data-ko="반사율 곡선에서 이웃한 무늬 사이의 간격을 넣으세요.">Enter the spacing between neighbouring fringes on a reflectivity curve.</p>
+        <div class="fields">
+          <label class="field"><span>Δq</span><span class="in"><input id="k-dq" type="number" step="any" min="0" value="0.0314" inputmode="decimal"><i>Å⁻¹</i></span></label>
+          <label class="field"><span>Δ2θ</span><span class="in"><input id="k-d2t" type="number" step="any" min="0" inputmode="decimal"><i>°</i></span></label>
+        </div>
+        <dl class="result" id="k-out" aria-live="polite"></dl>
+        <p class="tool-note" data-ko="t = 2π / Δq. Δ2θ는 작은 각 근사 Δq ≈ 2π Δ2θ / λ로 바꿉니다. 임계각 바로 위 무늬는 굴절 때문에 간격이 넓으니 높은 q 쪽 무늬를 쓰세요.">t = 2π / Δq. Δ2θ is converted with the small-angle form Δq ≈ 2π Δ2θ / λ. Fringes just above the critical angle are stretched by refraction, so read the spacing further out in q.</p>
+      </section>
+
+      <section class="tool" aria-labelledby="crystallite-size">
+        <h2 id="crystallite-size" data-ko="셰러 결정 크기">Crystallite size (Scherrer)</h2>
+        <p class="tool-lead" data-ko="회절 피크의 폭으로 결정 크기를 어림합니다.">Estimate crystallite size from the width of a diffraction peak.</p>
+        <div class="fields">
+          <label class="field"><span data-ko="피크 2θ">Peak 2θ</span><span class="in"><input id="s-tth" type="number" step="any" value="28.44" inputmode="decimal"><i>°</i></span></label>
+          <label class="field"><span data-ko="반치폭 β">FWHM β</span><span class="in"><input id="s-w" type="number" step="any" min="0" value="0.2" inputmode="decimal"><i>°</i></span></label>
+          <label class="field"><span data-ko="형상 인자 K">Shape factor K</span><span class="in"><input id="s-k" type="number" step="any" min="0" value="0.9" inputmode="decimal"></span></label>
+        </div>
+        <dl class="result" id="s-out" aria-live="polite"></dl>
+        <p class="tool-note" data-ko="τ = K λ / (β cos θ), β는 라디안. 장비 폭을 먼저 빼세요. 변형에 의한 폭이 섞이면 실제보다 작게 나옵니다.">τ = K λ / (β cos θ), with β in radians. Subtract the instrument width first; strain broadening makes the size come out too small.</p>
+      </section>
+    </div>
+
+    <p class="tool-share"><button type="button" id="share" data-ko="이 값들로 링크 복사">Copy a link with these values</button></p>
   </main>
 
   <footer><div class="footer-line"><span data-ko="용이삭, 빔라인 도구">Isaac Yong, beamline tools</span><nav aria-label="Footer"><a href="../">Home</a><a href="../lab/">Lab</a><a href="https://xray.ooguy.com/" target="_blank" rel="noopener noreferrer">X-ray Toolkit</a></nav><span data-ko="&lt;kbd&gt;`&lt;/kbd&gt; 키로 터미널 열기">Press <kbd>`</kbd> for the terminal</span></div></footer>
-  <script src="calc.js" defer></script>
-  <script src="tools.js" defer></script>
+  <script src="calc.js?v=2" defer></script>
+  <script src="tools.js?v=2" defer></script>
   <script src="../script.js" defer></script>
   <script src="../terminal.js" defer></script>
 </body>
